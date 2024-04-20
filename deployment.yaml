@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nonroot-server
+  namespace: demo
+  labels:
+    app: nonroot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nonroot
+  template:
+    metadata:
+      labels:
+        app: nonroot
+    spec:
+      containers:
+      - name: nonroot
+        image: ko://github.com/tamalsaha/nonroot-server
+        ports:
+        - containerPort: 80
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 65534
+          seccompProfile:
+            type: RuntimeDefault
